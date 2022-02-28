@@ -1,4 +1,26 @@
-export const SearchPanel = ({ users, param, setParam }) => {
+/**
+ * SearchPanel作为一个component，我们希望其他人复用这个组件
+ * 所以为了更好地说明当使用它的时候需要提供什么参数，我们可以提供一个interface
+ * 在interface里面定义所有所需参数的类型
+ */
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  title: string;
+  organization: string;
+}
+
+interface SearchPanelProps {
+  users: User[];
+  param: {
+    name: string;
+    personId: string;
+  };
+  setParam: (param: SearchPanelProps["param"]) => void;
+}
+
+export const SearchPanel = ({ users, param, setParam }: SearchPanelProps) => {
   return (
     <form action="">
       <div>
