@@ -65,11 +65,12 @@ export const useMount = (callback: () => void) => {
 /**
  * useDebounce改变了value的更新频率
  * 不管value更新的多么频繁，useDebounce都会在更新结束后一次性返回最后的值
+ * update: 使用泛型来规范类型
  * @param value
  * @param delay
  * @returns {unknown}
  */
-export const useDebounce = (value: unknown, delay?: number) => {
+export const useDebounce = <V>(value: V, delay?: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
