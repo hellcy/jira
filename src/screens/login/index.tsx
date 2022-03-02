@@ -1,21 +1,20 @@
 import { FormEvent } from "react";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export const LoginScreen = () => {
-  interface Test {
-    id: number;
-    name: string;
-  }
-
-  interface DifferentType {
-    id: number;
-    name: string;
-  }
-
-  const b: DifferentType = { id: 123, name: "fasdf" };
-
-  const test = (a: Test) => {};
-
-  test(b);
+  const login = (param: { username: string; password: string }) => {
+    fetch(`${apiUrl}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(param),
+    }).then(async (response) => {
+      if (response.ok) {
+      }
+    });
+  };
 
   // HTMLFormElement extends Element
   // JavaScript是面向接口编程，而不是面向对象编程
@@ -26,8 +25,8 @@ export const LoginScreen = () => {
       .value;
     const password = (event.currentTarget.elements[1] as HTMLInputElement)
       .value;
+    login({ username, password });
   };
-
   return (
     <form onSubmit={handleSubmit}>
       <div>
