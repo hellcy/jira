@@ -7,7 +7,7 @@ interface AuthForm {
   password: string;
 }
 
-const AuthContext = React.createContext<
+export const AuthContext = React.createContext<
   | {
       user: User | null;
       register: (form: AuthForm) => Promise<void>;
@@ -18,6 +18,11 @@ const AuthContext = React.createContext<
 >(undefined);
 AuthContext.displayName = "AuthContext";
 
+/**
+ * AuthProvider 是AuthContext的具体实现
+ * @param children
+ * @constructor
+ */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
