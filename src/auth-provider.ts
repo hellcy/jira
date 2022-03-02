@@ -17,10 +17,13 @@ export const handleUserResponse = ({ user }: { user: User }) => {
 
 /**
  * 当用户登陆或者注册时，把service worker后端传回来的token放到localStorage里面
+ * More about fetch
+ * fetch会返回一个Promise，里面包含一个Response
+ * 我们可以使用then()去resolveResponse，返回特定的对象，现在我们返回的是User对象
  * @param data
  */
 export const login = (data: { username: string; password: string }) => {
-  fetch(`${apiUrl}/login`, {
+  return fetch(`${apiUrl}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -29,12 +32,14 @@ export const login = (data: { username: string; password: string }) => {
   }).then(async (response) => {
     if (response.ok) {
       return handleUserResponse(await response.json());
+    } else {
+      return Promise.reject(data);
     }
   });
 };
 
 export const register = (data: { username: string; password: string }) => {
-  fetch(`${apiUrl}/register`, {
+  return fetch(`${apiUrl}/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -43,13 +48,16 @@ export const register = (data: { username: string; password: string }) => {
   }).then(async (response) => {
     if (response.ok) {
       return handleUserResponse(await response.json());
+    } else {
+      return Promise.reject(data);
     }
   });
 };
 
 /**
  * 当用户登出时，remove存放在localStorage里面的用户token
+ * 当使用async时，函数会返回一个Promise
  */
-export const logout = () => {
+export const logout = async () => {
   window.localStorage.removeItem(localStorageKey);
 };

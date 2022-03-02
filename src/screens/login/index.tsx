@@ -1,7 +1,8 @@
 import { FormEvent } from "react";
+import { useAuth } from "../../context/auth-context";
 
 export const LoginScreen = () => {
-  const login = (param: { username: string; password: string }) => {};
+  const { login, user, register } = useAuth();
 
   // HTMLFormElement extends Element
   // JavaScript是面向接口编程，而不是面向对象编程
@@ -16,6 +17,13 @@ export const LoginScreen = () => {
   };
   return (
     <form onSubmit={handleSubmit}>
+      {user ? (
+        <div>
+          登陆成功，用户名： {user.name}
+          <br />
+          token: {user.token}
+        </div>
+      ) : null}
       <div>
         <label htmlFor="username">用户名</label>
         <input type="text" id={"username"} />
