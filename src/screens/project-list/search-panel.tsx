@@ -9,6 +9,7 @@ export interface User {
   email: string;
   title: string;
   organization: string;
+  token: string;
 }
 
 interface SearchPanelProps {
