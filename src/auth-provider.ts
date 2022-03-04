@@ -3,8 +3,7 @@
  * 本文件就不需要开发了
  */
 import { User } from "./screens/project-list/search-panel";
-
-const apiUrl = process.env.REACT_APP_API_URL;
+import { http } from "./utils/http";
 
 const localStorageKey = "__auth_provider_token__";
 
@@ -23,36 +22,43 @@ export const handleUserResponse = ({ user }: { user: User }) => {
  * @param data
  */
 export const login = (data: { username: string; password: string }) => {
-  return fetch(`${apiUrl}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then(async (response) => {
-    if (response.ok) {
-      return handleUserResponse(await response.json());
-    } else {
-      return Promise.reject(data);
-    }
-  });
+  return http("login", { data, method: "POST" }).then(handleUserResponse);
 };
 
+// export const login = (data: { username: string; password: string }) => {
+//   return fetch(`${apiUrl}/login`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(data),
+//   }).then(async (response) => {
+//     if (response.ok) {
+//       return handleUserResponse(await response.json());
+//     } else {
+//       return Promise.reject(data);
+//     }
+//   });
+// };
+
 export const register = (data: { username: string; password: string }) => {
-  return fetch(`${apiUrl}/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then(async (response) => {
-    if (response.ok) {
-      return handleUserResponse(await response.json());
-    } else {
-      return Promise.reject(data);
-    }
-  });
+  return http("register", { data, method: "POST" }).then(handleUserResponse);
 };
+// export const register = (data: { username: string; password: string }) => {
+//   return fetch(`${apiUrl}/register`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(data),
+//   }).then(async (response) => {
+//     if (response.ok) {
+//       return handleUserResponse(await response.json());
+//     } else {
+//       return Promise.reject(data);
+//     }
+//   });
+// };
 
 /**
  * 当用户登出时，remove存放在localStorage里面的用户token
