@@ -3,6 +3,8 @@
  * 所以为了更好地说明当使用它的时候需要提供什么参数，我们可以提供一个interface
  * 在interface里面定义所有所需参数的类型
  */
+import { Input, Select } from "antd";
+
 export interface User {
   id: string;
   name: string;
@@ -25,7 +27,7 @@ export const SearchPanel = ({ users, param, setParam }: SearchPanelProps) => {
   return (
     <form action="">
       <div>
-        <input
+        <Input
           type="text"
           value={param.name}
           onChange={(event) =>
@@ -35,22 +37,22 @@ export const SearchPanel = ({ users, param, setParam }: SearchPanelProps) => {
             })
           }
         />
-        <select
+        <Select
           value={param.personId}
-          onChange={(event) =>
+          onChange={(value) =>
             setParam({
               ...param,
-              personId: event.target.value,
+              personId: value,
             })
           }
         >
-          <option value={""}>负责人</option>
+          <Select.Option value={""}>负责人</Select.Option>
           {users.map((user) => (
-            <option key={user.id} value={user.id}>
+            <Select.Option key={user.id} value={user.id}>
               {user.name}
-            </option>
+            </Select.Option>
           ))}
-        </select>
+        </Select>
       </div>
     </form>
   );
