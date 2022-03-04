@@ -63,10 +63,38 @@ export const http = async (
 /**
  * 从AuthProvider里获取user token
  * 并调用http方法
+ * JS中的typeof 是在runtime时运行的
+ * TS中的typeof 是在静态环境中运行的
+ *
+ * Parameters<T> 的作用是提取方法中的参数类型，并以一个tuple的形式返回
  */
 export const useHttp = () => {
   const { user } = useAuth();
-  // TODO 讲解TypeScript操作符
+  // 讲解TypeScript Utility Types
+  // 用范型给它传入一个其他类型，utility type对这个类型进行某种操作
   return (...[endpoint, config]: Parameters<typeof http>) =>
     http(endpoint, { ...config, token: user?.token });
 };
+
+// 类型别名在很多情况下可以和interface互换
+// interface Person {
+//   name: string
+// }
+// type Person = {name: string}
+// const xiaoMing: Person = {name: 'name'}
+
+// 类型别名， interface 在这种情况下无法替代type
+// type FavoriteNumber = string | number
+// let jackFavoriteNumber: FavoriteNumber = '6'
+
+// interface也无法实现utility type
+// 当你想要改变类型的属性，但是又不能直接更改类型定义时，可以使用Partial或者Omit utility type
+// Partial 会把对象中的所有属性变成optional的
+// Omit 会让你删除一个或者多个属性
+// type Person = {
+//   name: string,
+//   age: number
+// }
+//
+// const xiaoMing: Partial<Person> = {age: 15}
+// const xiaoHong: Omit<Person, 'name' | 'age'> = {}
