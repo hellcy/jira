@@ -7,7 +7,7 @@ interface AuthForm {
   password: string;
 }
 
-export const AuthContext = React.createContext<
+const AuthContext = React.createContext<
   | {
       user: User | null;
       register: (form: AuthForm) => Promise<void>;
@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// AuthProvider包裹住了<App />
 export const useAuth = () => {
   const context = React.useContext(AuthContext);
   if (!context) {

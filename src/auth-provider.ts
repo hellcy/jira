@@ -16,7 +16,7 @@ export const handleUserResponse = ({ user }: { user: User }) => {
 };
 
 /**
- * 当用户登陆或者注册时，把service worker后端传回来的token放到localStorage里面
+ * 当用户登陆或者注册时，把service worker后端传回来的user token放到localStorage里面
  * More about fetch
  * fetch会返回一个Promise，里面包含一个Response
  * 我们可以使用then()去resolveResponse，返回特定的对象，现在我们返回的是User对象
