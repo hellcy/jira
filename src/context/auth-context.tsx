@@ -1,11 +1,25 @@
 import React, { ReactNode, useState } from "react";
 import * as auth from "auth-provider";
 import { User } from "../screens/project-list/search-panel";
+import { http } from "../utils/http";
+import { useMount } from "../utils";
 
 interface AuthForm {
   username: string;
   password: string;
 }
+
+// 当user token存在时， 返回user
+const bootstrapUser = async () => {
+  let user = null;
+  const token = auth.getToken();
+  if (token) {
+    // me API会返回user信息
+    const data = await http("me", { token });
+    user = data.user;
+  }
+  return user;
+};
 
 const AuthContext = React.createContext<
   | {
@@ -34,6 +48,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 这在Java语言中也有体现，method reference
   const register = (form: AuthForm) => auth.register(form).then(setUser);
   const logout = () => auth.logout().then((user) => setUser(null));
+
+  // 初始化user
+  useMount(() => {
+    bootstrapUser().then(setUser);
+  });
 
   return (
     <AuthContext.Provider
