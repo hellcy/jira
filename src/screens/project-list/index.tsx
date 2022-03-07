@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { cleanObject, useDebounce, useMount } from "../../utils";
 import { useHttp } from "../../utils/http";
 import styled from "@emotion/styled";
+import { Typography } from "antd";
 
 export const ProjectListScreen = () => {
   const [param, setParam] = useState({
@@ -13,12 +14,21 @@ export const ProjectListScreen = () => {
 
   const [users, setUsers] = useState([]);
   const [list, setList] = useState([]);
-  const debouncedParam = useDebounce(param, 200);
+  const debouncedParam = useDebounce(param, 1000);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<null | Error>(null);
 
   const client = useHttp();
 
   useEffect(() => {
-    client("projects", { data: cleanObject(debouncedParam) }).then(setList);
+    setIsLoading(true);
+    client("projects", { data: cleanObject(debouncedParam) })
+      .then(setList)
+      .catch((error) => {
+        setError(error);
+        setList([]);
+      })
+      .finally(() => setIsLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedParam]);
 
@@ -36,7 +46,10 @@ export const ProjectListScreen = () => {
     <Container>
       <h1>项目列表</h1>
       <SearchPanel users={users} param={param} setParam={setParam} />
-      <List users={users} list={list} />
+      {error ? (
+        <Typography.Text type={"danger"}>{error.message}</Typography.Text>
+      ) : null}
+      <List loading={isLoading} users={users} dataSource={list} />
     </Container>
   );
 };
