@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { AuthProvider } from "./auth-context";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 /**
  * 关于React props.children
@@ -10,5 +11,9 @@ import { AuthProvider } from "./auth-context";
  * @constructor
  */
 export const AppProviders = ({ children }: { children: ReactNode }) => {
-  return <AuthProvider>{children}</AuthProvider>;
+  return (
+    <QueryClientProvider client={new QueryClient()}>
+      <AuthProvider>{children}</AuthProvider>;
+    </QueryClientProvider>
+  );
 };

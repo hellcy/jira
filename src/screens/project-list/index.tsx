@@ -19,7 +19,8 @@ export const ProjectListScreen = () => {
 
   useEffect(() => {
     client("projects", { data: cleanObject(debouncedParam) }).then(setList);
-  }, [debouncedParam, client]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedParam]);
 
   /**
    * 当useEffect的依赖列表为空时，表示他会在component加载时被调用一次
