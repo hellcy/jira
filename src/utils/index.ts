@@ -19,6 +19,11 @@ export const cleanObject = (object: { [key: string]: unknown }) => {
 };
 
 /**
+ * 当useEffect的依赖列表为空时，表示他会在component加载时被调用一次
+ * 相当于componentDidMount
+ * 这个函数会经常被用到，所以我们可以使用一个useMount custom hook来包装useEffect
+ * useMount传入一个函数，具体实现在调用useMount是决定
+ *
  * custom hook命名必须含有use，否则eslint就不会认为它是一个hook
  * hook只允许在两个地方存在
  * 1. 另外一个hook里
