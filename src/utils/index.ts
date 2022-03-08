@@ -106,3 +106,24 @@ export const useArray = <T>(initialArray: T[]) => {
     },
   };
 };
+
+export const useDocumentTitle = (
+  title: string,
+  keepOnUnmount: boolean = true // 当切换页面时是否保留document.title
+) => {
+  const oldTitle = document.title;
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  // 此useEffect的依赖列表为空，所以只会在useDocumentTitle被调用时执行一次
+  // 第一次调用的返回函数则会在第二次被调用开始之前执行
+  // 这样就可以保留上一次的title
+  useEffect(() => {
+    return () => {
+      if (!keepOnUnmount) {
+        document.title = oldTitle;
+      }
+    };
+  }, []);
+};
