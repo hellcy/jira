@@ -14,6 +14,7 @@ export const ProjectListScreen = () => {
   });
 
   const debouncedParam = useDebounce(param, 1000);
+  // 自定义hook的目的是重用代码逻辑，useProject 和 useUsers 里面都使用了 useAsync 和 useHttp 的逻辑
   const { isLoading, error, data: list } = useProjects(debouncedParam);
   const { data: users } = useUsers();
 

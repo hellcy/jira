@@ -15,13 +15,22 @@ const defaultInitialState: State<null> = {
   error: null,
 };
 
+const defaultConfig = {
+  throwOnError: false,
+};
+
 // 用户也可以传入一个状态
-export const useAsync = <D>(initialState?: State<D>) => {
+export const useAsync = <D>(
+  initialState?: State<D>,
+  initialConfig?: typeof defaultConfig
+) => {
   // 用户传入的state状态的优先级高于默认的状态，所以将用户传入参数放在最后
   const [state, setState] = useState<State<D>>({
     ...defaultInitialState,
     ...initialState,
   });
+
+  const config = { ...defaultConfig, ...initialConfig };
 
   // 当请求已经结束时
   const setData = (data: D) =>
@@ -56,6 +65,12 @@ export const useAsync = <D>(initialState?: State<D>) => {
       })
       .catch((error) => {
         setError(error);
+        // 使用config来决定是抛出异常还是返回error属性
+        // 一般在异步状态下返回Error， 在同步状态下抛出异常
+        if (config.throwOnError) {
+          console.log("run catches and throws error");
+          return Promise.reject(error);
+        }
         return error;
       });
   };

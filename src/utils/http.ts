@@ -55,6 +55,7 @@ export const http = async (
       if (response.ok) {
         return data;
       } else {
+        console.log("http throws promise");
         return Promise.reject(data);
       }
     });
