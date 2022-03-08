@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const isTruthy = (value: unknown) => (value === 0 ? false : !value);
 
@@ -111,7 +111,8 @@ export const useDocumentTitle = (
   title: string,
   keepOnUnmount: boolean = true // 当切换页面时是否保留document.title
 ) => {
-  const oldTitle = document.title;
+  // useRef可以让变量在整个hook方法的生命周期内保持不变
+  const oldTitle = useRef(document.title).current;
   useEffect(() => {
     document.title = title;
   }, [title]);
@@ -127,5 +128,5 @@ export const useDocumentTitle = (
         document.title = oldTitle;
       }
     };
-  }, []);
+  }, [keepOnUnmount, oldTitle]);
 };
