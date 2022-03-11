@@ -3,6 +3,8 @@ import { Table, TableProps } from "antd";
 import dayjs from "dayjs";
 import { Project } from "types/project";
 import { Link } from "react-router-dom";
+import { Pin } from "../../components/pin";
+import { useEditProject } from "../../utils/project";
 
 interface ListProps extends TableProps<Project> {
   users: User[];
@@ -10,11 +12,25 @@ interface ListProps extends TableProps<Project> {
 
 // DataSource属性在TableProps里面
 export const List = ({ users, ...props }: ListProps) => {
+  const { mutate } = useEditProject();
   return (
     <Table
       rowKey={"id"}
       pagination={false}
       columns={[
+        {
+          title: <Pin checked={true} disabled={true} />,
+          render(value, project) {
+            return (
+              <Pin
+                checked={project.pin}
+                onCheckedChange={(pin) => {
+                  mutate({ id: project.id, pin });
+                }}
+              />
+            );
+          },
+        },
         {
           title: "名称",
           sorter: (a, b) => a.name.localeCompare(b.name),
