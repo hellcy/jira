@@ -6,12 +6,15 @@ import styled from "@emotion/styled";
 import { Typography } from "antd";
 import { useProjects } from "../../utils/project";
 import { useUsers } from "../../utils/user";
+import { useUrlQueryParam } from "../../utils/url";
 
 export const ProjectListScreen = () => {
-  const [param, setParam] = useState({
+  const [, setParam] = useState({
     name: "",
     personId: "",
   });
+
+  const [param] = useUrlQueryParam(["name", "personId"]);
 
   const debouncedParam = useDebounce(param, 1000);
   // 自定义hook的目的是重用代码逻辑，useProject 和 useUsers 里面都使用了 useAsync 和 useHttp 的逻辑
@@ -31,6 +34,8 @@ export const ProjectListScreen = () => {
     </Container>
   );
 };
+
+ProjectListScreen.whyDidYouRender = true;
 
 const Container = styled.div`
   padding: 3.2rem;
