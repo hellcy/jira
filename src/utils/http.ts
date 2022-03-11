@@ -1,6 +1,7 @@
 import qs from "qs";
 import * as auth from "auth-provider";
 import { useAuth } from "../context/auth-context";
+import { useCallback } from "react";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -73,8 +74,11 @@ export const useHttp = () => {
   const { user } = useAuth();
   // 讲解TypeScript Utility Types
   // 用范型给它传入一个其他类型，utility type对这个类型进行某种操作
-  return (...[endpoint, config]: Parameters<typeof http>) =>
-    http(endpoint, { ...config, token: user?.token });
+  return useCallback(
+    (...[endpoint, config]: Parameters<typeof http>) =>
+      http(endpoint, { ...config, token: user?.token }),
+    [user?.token]
+  );
 };
 
 // 类型别名在很多情况下可以和interface互换

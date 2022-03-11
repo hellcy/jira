@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useMountedRef } from "./index";
 
 // error 和 data 为可选属性
@@ -39,56 +39,62 @@ export const useAsync = <D>(
   const config = { ...defaultConfig, ...initialConfig };
 
   // 当请求已经结束时
-  const setData = (data: D) =>
-    setState({
-      data,
-      stat: "success",
-      error: null,
-    });
+  const setData = useCallback(
+    (data: D) =>
+      setState({
+        data,
+        stat: "success",
+        error: null,
+      }),
+    []
+  );
 
   // 当请求结束并且返回错误时
-  const setError = (error: Error) => {
+  const setError = useCallback((error: Error) => {
     setState({
       error,
       stat: "error",
       data: null,
     });
-  };
+  }, []);
 
   // run用来触发异步请求
-  const run = (
-    promise: Promise<D>,
-    runConfig?: { retry: () => Promise<D> }
-  ) => {
-    if (!promise || !promise.then) {
-      throw new Error("请传入Promise类型数据");
-    }
-
-    setRetry(() => () => {
-      if (runConfig?.retry) {
-        run(runConfig?.retry(), runConfig);
+  // 当需要把非基本类型的变量放到依赖列表中时，就需要使用到 useCallback 或者 useMemo
+  // Tips：当使用 hook 返回函数时，很大概率函数会被用在依赖列表中，这时候就需要把这些函数加入 useCallback 或者 useMemo
+  const run = useCallback(
+    (promise: Promise<D>, runConfig?: { retry: () => Promise<D> }) => {
+      if (!promise || !promise.then) {
+        throw new Error("请传入Promise类型数据");
       }
-    });
 
-    // 将状态改成loading
-    setState({ ...state, stat: "loading" });
-
-    return promise
-      .then((data) => {
-        if (mountedRef.current) setData(data);
-        return data;
-      })
-      .catch((error) => {
-        setError(error);
-        // 使用config来决定是抛出异常还是返回error属性
-        // 一般在异步状态下返回Error， 在同步状态下抛出异常
-        if (config.throwOnError) {
-          console.log("run catches and throws error");
-          return Promise.reject(error);
+      setRetry(() => () => {
+        if (runConfig?.retry) {
+          run(runConfig?.retry(), runConfig);
         }
-        return error;
       });
-  };
+
+      // 将状态改成loading
+      //setState({ ...state, stat: "loading" });
+      setState((prevState) => ({ ...prevState, stat: "loading" }));
+
+      return promise
+        .then((data) => {
+          if (mountedRef.current) setData(data);
+          return data;
+        })
+        .catch((error) => {
+          setError(error);
+          // 使用config来决定是抛出异常还是返回error属性
+          // 一般在异步状态下返回Error， 在同步状态下抛出异常
+          if (config.throwOnError) {
+            console.log("run catches and throws error");
+            return Promise.reject(error);
+          }
+          return error;
+        });
+    },
+    [config.throwOnError, mountedRef, setData, setError]
+  );
 
   return {
     isIdle: state.stat === "idle",

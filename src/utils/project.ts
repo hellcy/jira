@@ -1,7 +1,7 @@
 import { useAsync } from "./use-async";
 import { Project } from "../types/project";
 import { useHttp } from "./http";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { cleanObject } from "./index";
 
 /**
@@ -12,14 +12,16 @@ export const useProjects = (param?: Partial<Project>) => {
   const client = useHttp();
   const { run, ...result } = useAsync<Project[]>(); // Project数组是传入的data属性
 
-  const fetchProjects = () =>
-    client("projects", { data: cleanObject(param || {}) });
+  const fetchProjects = useCallback(
+    () => client("projects", { data: cleanObject(param || {}) }),
+    [param, client]
+  );
 
   useEffect(() => {
     run(fetchProjects(), { retry: fetchProjects });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [param]);
+  }, [param, run, fetchProjects]);
 
   return result;
 };
