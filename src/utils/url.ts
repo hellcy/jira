@@ -1,5 +1,6 @@
-import { useSearchParams } from "react-router-dom";
+import { URLSearchParamsInit, useSearchParams } from "react-router-dom";
 import { useMemo } from "react";
+import { cleanObject } from "./index";
 
 /**
  * 返回页面中url的参数值
@@ -32,6 +33,17 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
         }, {} as { [key in K]: string }),
       [searchParams]
     ),
-    setSearchParam,
+    // 不直接使用setSearchParam的原因是我们希望从setParam中传入的参数只在searchParam中
+    (params: Partial<{ [key in K]: unknown }>) => {
+      // 1。 将searchParams变成一个可遍历的对象，这样就可以使用spread ... 操作符
+      // 2。 使用params更新可能的值
+      // 3。 使用cleanObject清除不需要的值
+      // 4。 最后把新的params放在setSearchParam函数中返回
+      const o = cleanObject({
+        ...Object.fromEntries(searchParams),
+        ...params,
+      }) as URLSearchParamsInit;
+      return setSearchParam(o);
+    },
   ] as const;
 };
