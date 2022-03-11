@@ -5,17 +5,19 @@ import styled from "@emotion/styled";
 import { Typography } from "antd";
 import { useProjects } from "../../utils/project";
 import { useUsers } from "../../utils/user";
-import { useUrlQueryParam } from "../../utils/url";
+import { useProjectsSearchParams } from "./util";
 
 export const ProjectListScreen = () => {
-  const [param, setParam] = useUrlQueryParam(["name", "personId"]);
-
-  const debouncedParam = useDebounce(param, 1000);
-  // 自定义hook的目的是重用代码逻辑，useProject 和 useUsers 里面都使用了 useAsync 和 useHttp 的逻辑
-  const { isLoading, error, data: list } = useProjects(debouncedParam);
-  const { data: users } = useUsers();
-
   useDocumentTitle("项目列表", false);
+
+  const [param, setParam] = useProjectsSearchParams();
+  // 自定义hook的目的是重用代码逻辑，useProject 和 useUsers 里面都使用了 useAsync 和 useHttp 的逻辑
+  const {
+    isLoading,
+    error,
+    data: list,
+  } = useProjects(useDebounce(param, 1000));
+  const { data: users } = useUsers();
 
   return (
     <Container>

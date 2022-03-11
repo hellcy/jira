@@ -3,10 +3,12 @@
  * 所以为了更好地说明当使用它的时候需要提供什么参数，我们可以提供一个interface
  * 在interface里面定义所有所需参数的类型
  */
-import { Form, Input, Select } from "antd";
+import { Form, Input } from "antd";
+import { Project } from "../../types/project";
+import { UserSelect } from "../../components/user-select";
 
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   title: string;
@@ -16,14 +18,11 @@ export interface User {
 
 interface SearchPanelProps {
   users: User[];
-  param: {
-    name: string;
-    personId: string;
-  };
+  param: Partial<Pick<Project, "name" | "personId">>;
   setParam: (param: SearchPanelProps["param"]) => void;
 }
 
-export const SearchPanel = ({ users, param, setParam }: SearchPanelProps) => {
+export const SearchPanel = ({ param, setParam }: SearchPanelProps) => {
   return (
     <Form layout={"inline"} style={{ marginBottom: "2rem" }}>
       <Form.Item>
@@ -40,7 +39,8 @@ export const SearchPanel = ({ users, param, setParam }: SearchPanelProps) => {
         />
       </Form.Item>
       <Form.Item>
-        <Select
+        <UserSelect
+          defaultOptionName={"负责人"}
           value={param.personId}
           onChange={(value) =>
             setParam({
@@ -48,14 +48,7 @@ export const SearchPanel = ({ users, param, setParam }: SearchPanelProps) => {
               personId: value,
             })
           }
-        >
-          <Select.Option value={""}>负责人</Select.Option>
-          {users.map((user) => (
-            <Select.Option key={user.id} value={String(user.id)}>
-              {user.name}
-            </Select.Option>
-          ))}
-        </Select>
+        />
       </Form.Item>
     </Form>
   );
