@@ -6,11 +6,14 @@ import { Typography } from "antd";
 import { useProjects } from "../../utils/project";
 import { useUsers } from "../../utils/user";
 import { useProjectsSearchParams } from "./util";
-import { Row } from "../../components/lib";
+import { ButtonNoPadding, Row } from "../../components/lib";
+import { useDispatch } from "react-redux";
+import { projectListActions } from "./project-list.slice";
 
-export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
+export const ProjectListScreen = () => {
   useDocumentTitle("项目列表", false);
 
+  const dispatch = useDispatch();
   const [param, setParam] = useProjectsSearchParams();
   // 自定义hook的目的是重用代码逻辑，useProject 和 useUsers 里面都使用了 useAsync 和 useHttp 的逻辑
   const {
@@ -25,7 +28,12 @@ export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
     <Container>
       <Row between={true}>
         <h1>项目列表</h1>
-        {props.projectButton}
+        <ButtonNoPadding
+          onClick={() => dispatch(projectListActions.openProjectModal())}
+          type={"link"}
+        >
+          Create Project
+        </ButtonNoPadding>
       </Row>
       <SearchPanel users={users || []} param={param} setParam={setParam} />
       {error ? (
@@ -36,7 +44,6 @@ export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
         loading={isLoading}
         users={users || []}
         dataSource={list || []}
-        {...props}
       />
     </Container>
   );
