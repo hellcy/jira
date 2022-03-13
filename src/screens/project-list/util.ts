@@ -55,7 +55,7 @@ export const useProjectModal = () => {
 
   // 返回对象的好处： 无需担心变量的顺序，只要名字正确即可
   return {
-    projectModalOpen: projectCreate === "true" || Boolean(editingProject),
+    projectModalOpen: projectCreate === "true" || Boolean(editingProjectId),
     open,
     close,
     startEdit,

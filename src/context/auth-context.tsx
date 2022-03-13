@@ -5,6 +5,7 @@ import { http } from "../utils/http";
 import { useMount } from "../utils";
 import { useAsync } from "../utils/use-async";
 import { FullPageErrorFallback, FullPageLoading } from "../components/lib";
+import { useQueryClient } from "react-query";
 
 interface AuthForm {
   username: string;
@@ -50,6 +51,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setData: setUser,
   } = useAsync<User | null>();
 
+  const queryClient = useQueryClient();
+
   const login = (form: AuthForm) =>
     auth.login(form).then((user) => setUser(user));
 
@@ -57,7 +60,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 我们可以简写成只保留函数名，取消参数
   // 这在Java语言中也有体现，method reference
   const register = (form: AuthForm) => auth.register(form).then(setUser);
-  const logout = () => auth.logout().then(() => setUser(null));
+  const logout = () =>
+    auth.logout().then(() => {
+      setUser(null);
+      queryClient.clear();
+    });
 
   // 初始化user
   useMount(() => {
