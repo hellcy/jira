@@ -2,8 +2,8 @@
  * 在真实环境中，如果使用了firebase或者auth0等第三方服务的话
  * 本文件就不需要开发了
  */
-import { User } from "./screens/project-list/search-panel";
 import { http } from "./utils/http";
+import { User } from "./types/user";
 
 const localStorageKey = "__auth_provider_token__";
 

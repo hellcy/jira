@@ -1,7 +1,7 @@
-import { User } from "../screens/project-list/search-panel";
 import { useAsync } from "./use-async";
 import { useHttp } from "./http";
 import { useMount } from "./index";
+import { User } from "../types/user";
 
 export const useUsers = () => {
   const client = useHttp();
