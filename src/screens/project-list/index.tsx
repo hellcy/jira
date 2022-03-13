@@ -2,11 +2,10 @@ import { SearchPanel } from "./search-panel";
 import { List } from "./list";
 import { useDebounce, useDocumentTitle } from "../../utils";
 import styled from "@emotion/styled";
-import { Typography } from "antd";
 import { useProjects } from "../../utils/project";
 import { useUsers } from "../../utils/user";
 import { useProjectModal, useProjectsSearchParams } from "./util";
-import { ButtonNoPadding, Row } from "../../components/lib";
+import { ButtonNoPadding, ErrorBox, Row } from "../../components/lib";
 
 export const ProjectListScreen = () => {
   useDocumentTitle("项目列表", false);
@@ -18,7 +17,6 @@ export const ProjectListScreen = () => {
     isLoading,
     error,
     data: list,
-    retry,
   } = useProjects(useDebounce(param, 1000));
   const { data: users } = useUsers();
 
@@ -31,15 +29,8 @@ export const ProjectListScreen = () => {
         </ButtonNoPadding>
       </Row>
       <SearchPanel users={users || []} param={param} setParam={setParam} />
-      {error ? (
-        <Typography.Text type={"danger"}>{error.message}</Typography.Text>
-      ) : null}
-      <List
-        refresh={retry}
-        loading={isLoading}
-        users={users || []}
-        dataSource={list || []}
-      />
+      <ErrorBox error={error} />
+      <List loading={isLoading} users={users || []} dataSource={list || []} />
     </Container>
   );
 };
