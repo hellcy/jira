@@ -16,3 +16,23 @@ export const useProjectsSearchParams = () => {
     setParam,
   ] as const;
 };
+
+export const useProjectModal = () => {
+  // 读取URL中的 projectCreate 参数
+  const [{ projectCreate }, setProjectCreate] = useUrlQueryParam([
+    "projectCreate",
+  ]);
+
+  const open = () => setProjectCreate({ projectCreate: true });
+  const close = () => setProjectCreate({ projectCreate: undefined });
+
+  // 返回tuple的好处： 调用者可以随意设定变量的名字，一个很好的例子就是const [someName, setSomeName] = useState()
+  // return [projectCreate === "true", open, close] as const;
+
+  // 返回对象的好处： 无需担心变量的顺序，只要名字正确即可
+  return {
+    projectModalOpen: projectCreate === "true",
+    open,
+    close,
+  };
+};

@@ -5,12 +5,13 @@ import styled from "@emotion/styled";
 import { Typography } from "antd";
 import { useProjects } from "../../utils/project";
 import { useUsers } from "../../utils/user";
-import { useProjectsSearchParams } from "./util";
-import { Row } from "../../components/lib";
+import { useProjectModal, useProjectsSearchParams } from "./util";
+import { ButtonNoPadding, Row } from "../../components/lib";
 
-export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
+export const ProjectListScreen = () => {
   useDocumentTitle("项目列表", false);
 
+  const { open } = useProjectModal();
   const [param, setParam] = useProjectsSearchParams();
   // 自定义hook的目的是重用代码逻辑，useProject 和 useUsers 里面都使用了 useAsync 和 useHttp 的逻辑
   const {
@@ -25,7 +26,9 @@ export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
     <Container>
       <Row between={true}>
         <h1>项目列表</h1>
-        {props.projectButton}
+        <ButtonNoPadding onClick={() => open()} type={"link"}>
+          Create Project
+        </ButtonNoPadding>
       </Row>
       <SearchPanel users={users || []} param={param} setParam={setParam} />
       {error ? (
@@ -36,7 +39,6 @@ export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
         loading={isLoading}
         users={users || []}
         dataSource={list || []}
-        {...props}
       />
     </Container>
   );
