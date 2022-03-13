@@ -1,5 +1,6 @@
 import { useUrlQueryParam } from "../../utils/url";
 import { useMemo } from "react";
+import { useProject } from "../../utils/project";
 
 export const useProjectsSearchParams = () => {
   const [param, setParam] = useUrlQueryParam(["name", "personId"]);
@@ -22,17 +23,33 @@ export const useProjectModal = () => {
   const [{ projectCreate }, setProjectCreate] = useUrlQueryParam([
     "projectCreate",
   ]);
+  const [{ editingProjectId }, setEditingProjectId] = useUrlQueryParam([
+    "editingProjectId",
+  ]);
+
+  const { data: editingProject, isLoading } = useProject(
+    Number(editingProjectId)
+  );
 
   const open = () => setProjectCreate({ projectCreate: true });
-  const close = () => setProjectCreate({ projectCreate: undefined });
+  const close = () => {
+    projectCreate
+      ? setProjectCreate({ projectCreate: undefined })
+      : setEditingProjectId({ editingProjectId: undefined });
+  };
+  const startEdit = (id: number) =>
+    setEditingProjectId({ editingProjectId: id });
 
   // 返回tuple的好处： 调用者可以随意设定变量的名字，一个很好的例子就是const [someName, setSomeName] = useState()
   // return [projectCreate === "true", open, close] as const;
 
   // 返回对象的好处： 无需担心变量的顺序，只要名字正确即可
   return {
-    projectModalOpen: projectCreate === "true",
+    projectModalOpen: projectCreate === "true" || Boolean(editingProject),
     open,
     close,
+    startEdit,
+    editingProject,
+    isLoading,
   };
 };
