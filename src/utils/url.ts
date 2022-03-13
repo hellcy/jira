@@ -1,6 +1,6 @@
 import { URLSearchParamsInit, useSearchParams } from "react-router-dom";
-import { useMemo } from "react";
-import { cleanObject } from "./index";
+import { useMemo, useState } from "react";
+import { cleanObject, subset } from "./index";
 
 /**
  * 返回页面中url的参数值
@@ -23,15 +23,17 @@ import { cleanObject } from "./index";
  * 非组件状态的引用对象 - 尽量不要放到依赖列表
  */
 export const useUrlQueryParam = <K extends string>(keys: K[]) => {
-  const [searchParams, setSearchParam] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const setSearchParams = useSetUrlSearchParam();
+  const [stateKeys] = useState(keys);
 
   return [
     useMemo(
       () =>
-        keys.reduce((prev, key) => {
-          return { ...prev, [key]: searchParams.get(key) || "" };
-        }, {} as { [key in K]: string }),
-      [searchParams]
+        subset(Object.fromEntries(searchParams), stateKeys) as {
+          [key in K]: string;
+        },
+      [searchParams, stateKeys]
     ),
     // 不直接使用setSearchParam的原因是我们希望从setParam中传入的参数只在searchParam中
     (params: Partial<{ [key in K]: unknown }>) => {
@@ -39,11 +41,24 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
       // 2。 使用params更新可能的值
       // 3。 使用cleanObject清除不需要的值
       // 4。 最后把新的params放在setSearchParam函数中返回
-      const o = cleanObject({
-        ...Object.fromEntries(searchParams),
-        ...params,
-      }) as URLSearchParamsInit;
-      return setSearchParam(o);
+      // const o = cleanObject({
+      //   ...Object.fromEntries(searchParams),
+      //   ...params,
+      // }) as URLSearchParamsInit;
+      // return setSearchParam(o);
+
+      return setSearchParams(params);
     },
   ] as const;
+};
+
+export const useSetUrlSearchParam = () => {
+  const [searchParams, setSearchParam] = useSearchParams();
+  return (params: { [key in string]: unknown }) => {
+    const o = cleanObject({
+      ...Object.fromEntries(searchParams),
+      ...params,
+    }) as URLSearchParamsInit;
+    return setSearchParam(o);
+  };
 };
