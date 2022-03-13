@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 import { useMountedRef } from "./index";
 
 // error 和 data 为可选属性
@@ -20,18 +20,32 @@ const defaultConfig = {
   throwOnError: false,
 };
 
+const useSafeDispatch = <T>(dispatch: (...args: T[]) => void) => {
+  const mountedRef = useMountedRef();
+
+  return useCallback(
+    (...args: T[]) => (mountedRef.current ? dispatch(...args) : void 0),
+    [dispatch, mountedRef]
+  );
+};
+
 // 用户也可以传入一个状态
+// useState适合用于单个状态
+// useReducer适合用于多个相互之间影响的状态
 export const useAsync = <D>(
   initialState?: State<D>,
   initialConfig?: typeof defaultConfig
 ) => {
   // 用户传入的state状态的优先级高于默认的状态，所以将用户传入参数放在最后
-  const [state, setState] = useState<State<D>>({
-    ...defaultInitialState,
-    ...initialState,
-  });
+  const [state, dispatch] = useReducer(
+    (state: State<D>, action: Partial<State<D>>) => ({ ...state, ...action }),
+    {
+      ...defaultInitialState,
+      ...initialState,
+    }
+  );
 
-  const mountedRef = useMountedRef();
+  const safeDispatch = useSafeDispatch(dispatch);
 
   // useState直接传入函数的含义是：惰性初始化，所以要用useState保存函数不能直接传入函数
   const [retry, setRetry] = useState(() => () => {});
@@ -41,22 +55,25 @@ export const useAsync = <D>(
   // 当请求已经结束时
   const setData = useCallback(
     (data: D) =>
-      setState({
+      safeDispatch({
         data,
         stat: "success",
         error: null,
       }),
-    []
+    [safeDispatch]
   );
 
   // 当请求结束并且返回错误时
-  const setError = useCallback((error: Error) => {
-    setState({
-      error,
-      stat: "error",
-      data: null,
-    });
-  }, []);
+  const setError = useCallback(
+    (error: Error) => {
+      safeDispatch({
+        error,
+        stat: "error",
+        data: null,
+      });
+    },
+    [safeDispatch]
+  );
 
   // run用来触发异步请求
   // 当需要把非基本类型的变量放到依赖列表中时，就需要使用到 useCallback 或者 useMemo
@@ -75,11 +92,11 @@ export const useAsync = <D>(
 
       // 将状态改成loading
       //setState({ ...state, stat: "loading" });
-      setState((prevState) => ({ ...prevState, stat: "loading" }));
+      safeDispatch({ stat: "loading" });
 
       return promise
         .then((data) => {
-          if (mountedRef.current) setData(data);
+          setData(data);
           return data;
         })
         .catch((error) => {
@@ -93,7 +110,7 @@ export const useAsync = <D>(
           return error;
         });
     },
-    [config.throwOnError, mountedRef, setData, setError]
+    [config.throwOnError, setData, setError, safeDispatch]
   );
 
   return {
