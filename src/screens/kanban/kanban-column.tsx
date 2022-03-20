@@ -64,7 +64,7 @@ export const KanbanColumn = React.forwardRef<
           type={"ROW"}
           direction={"vertical"}
         >
-          <DropChild>
+          <DropChild style={{ minHeight: "5px" }}>
             {tasks?.map((task, index) => (
               <Drag draggableId={"task" + task.id} index={index} key={task.id}>
                 <div ref={ref}>
