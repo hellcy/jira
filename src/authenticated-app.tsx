@@ -24,7 +24,7 @@ import { UserPopover } from "./components/user-popover";
  * @constructor
  */
 
-export const AuthenticatedApp = () => {
+const AuthenticatedApp = () => {
   return (
     <Container>
       <Router>
@@ -80,6 +80,8 @@ const User = () => {
     </Dropdown>
   );
 };
+
+export default AuthenticatedApp;
 
 /**
  * 首先，display: grid 表明这是一个grid容器，其子元素布局符合grid规则。
