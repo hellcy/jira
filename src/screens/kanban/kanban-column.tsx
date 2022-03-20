@@ -49,7 +49,10 @@ export const KanbanColumn = ({ kanban }: { kanban: Kanban }) => {
 
   return (
     <Container>
-      <h3>{kanban.name}</h3>
+      <Row between={true}>
+        <h3>{kanban.name}</h3>
+        <More kanban={kanban} />
+      </Row>
       <TasksContainer>
         {tasks?.map((task) => (
           <TaskCard task={task} />
@@ -57,6 +60,35 @@ export const KanbanColumn = ({ kanban }: { kanban: Kanban }) => {
         <CreateTask kanbanId={kanban.id} />
       </TasksContainer>
     </Container>
+  );
+};
+
+const More = ({ kanban }: { kanban: Kanban }) => {
+  const { mutateAsync: deleteKanban } = useDeleteKanban(useKanbansQueryKey());
+  const startEdit = () => {
+    Modal.confirm({
+      okText: "Confirm",
+      cancelText: "Cancel",
+      title: "Are you sure to delete kanban?",
+      onOk() {
+        return deleteKanban({ id: kanban.id });
+      },
+    });
+  };
+  const overlay = (
+    <Menu>
+      <Menu.Item>
+        <Button onClick={startEdit} type={"link"}>
+          Delete
+        </Button>
+      </Menu.Item>
+    </Menu>
+  );
+
+  return (
+    <Dropdown overlay={overlay}>
+      <Button type={"link"}>...</Button>
+    </Dropdown>
   );
 };
 
