@@ -1,15 +1,11 @@
-import { useAsync } from "./use-async";
 import { useHttp } from "./http";
-import { useMount } from "./index";
 import { User } from "../types/user";
+import { useQuery } from "react-query";
 
-export const useUsers = () => {
+export const useUsers = (param?: Partial<User>) => {
   const client = useHttp();
-  const { run, ...result } = useAsync<User[]>(); // User数组是传入的data属性
 
-  useMount(() => {
-    run(client("users"));
-  });
-
-  return result;
+  return useQuery<User[]>(["users", param], () =>
+    client("users", { data: param })
+  );
 };
