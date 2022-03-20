@@ -4,9 +4,17 @@ import { useTaskTypes } from "../../utils/task-type";
 import taskIcon from "assets/task.svg";
 import bugIcon from "assets/bug.svg";
 import styled from "@emotion/styled";
-import { Card } from "antd";
-import { useTasksSearchParams } from "./util";
+import { Button, Card, Dropdown, Menu, Modal } from "antd";
+import {
+  useKanbansQueryKey,
+  useTasksModal,
+  useTasksSearchParams,
+} from "./util";
 import { CreateTask } from "./create-task";
+import { Task } from "../../types/task";
+import { Mark } from "../../components/mark";
+import { useDeleteKanban } from "../../utils/kanban";
+import { Row } from "../../components/lib";
 
 const TaskTypeIcon = ({ id }: { id: number }) => {
   const { data: taskTypes } = useTaskTypes();
@@ -18,6 +26,23 @@ const TaskTypeIcon = ({ id }: { id: number }) => {
   return <img src={name === "task" ? taskIcon : bugIcon} alt={"Task Icon"} />;
 };
 
+const TaskCard = ({ task }: { task: Task }) => {
+  const { startEdit } = useTasksModal();
+  const { name: keyword } = useTasksSearchParams();
+  return (
+    <Card
+      style={{ marginBottom: "0.5rem", cursor: "pointer" }}
+      key={task.id}
+      onClick={() => startEdit(task.id)}
+    >
+      <p>
+        <Mark keyword={keyword} name={task.name} />
+      </p>
+      <TaskTypeIcon id={task.typeId} />
+    </Card>
+  );
+};
+
 export const KanbanColumn = ({ kanban }: { kanban: Kanban }) => {
   const { data: allTasks } = useTasks(useTasksSearchParams());
   const tasks = allTasks?.filter((task) => task.kanbanId === kanban.id);
@@ -27,10 +52,7 @@ export const KanbanColumn = ({ kanban }: { kanban: Kanban }) => {
       <h3>{kanban.name}</h3>
       <TasksContainer>
         {tasks?.map((task) => (
-          <Card style={{ marginBottom: "0.5rem" }} key={task.id}>
-            <div>{task.name}</div>
-            <TaskTypeIcon id={task.typeId} />
-          </Card>
+          <TaskCard task={task} />
         ))}
         <CreateTask kanbanId={kanban.id} />
       </TasksContainer>
