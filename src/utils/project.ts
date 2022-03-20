@@ -8,7 +8,7 @@ import {
 } from "./use-optimistic-options";
 
 /**
- * 获取project list
+ * get all projects
  * @param param
  */
 export const useProjects = (param?: Partial<Project>) => {
@@ -20,7 +20,7 @@ export const useProjects = (param?: Partial<Project>) => {
 };
 
 /**
- * 更新project by id
+ *  edit project by id
  */
 export const useEditProject = (queryKey: QueryKey) => {
   const client = useHttp();
@@ -36,7 +36,7 @@ export const useEditProject = (queryKey: QueryKey) => {
 };
 
 /**
- * 添加project
+ * creat new project
  */
 export const useAddProject = (queryKey: QueryKey) => {
   const client = useHttp();
@@ -65,6 +65,7 @@ export const useDeleteProject = (queryKey: QueryKey) => {
     useDeleteConfig(queryKey)
   );
 };
+
 /**
  * Get project information by id
  */

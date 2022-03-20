@@ -1,17 +1,20 @@
 import { useHttp } from "./http";
 import { QueryKey, useMutation, useQuery } from "react-query";
 import { Task } from "../types/task";
-import { useAddConfig } from "./use-optimistic-options";
+import { useAddConfig, useDeleteConfig } from "./use-optimistic-options";
+import { Project } from "../types/project";
+import { useDebounce } from "./index";
 
 /**
- * get all tasks or by taskId
+ * get all tasks
  * @param param
  */
 export const useTasks = (param?: Partial<Task>) => {
   const client = useHttp();
+  const debouncedParam = { ...param, name: useDebounce(param?.name, 200) };
 
-  return useQuery<Task[]>(["tasks", param], () =>
-    client("tasks", { data: param })
+  return useQuery<Task[]>(["tasks", debouncedParam], () =>
+    client("tasks", { data: debouncedParam })
   );
 };
 
@@ -29,5 +32,32 @@ export const useAddTask = (queryKey: QueryKey) => {
         data: params,
       }),
     useAddConfig(queryKey)
+  );
+};
+
+/**
+ * get task by taskId
+ * @param id
+ */
+export const useTask = (id?: number) => {
+  const client = useHttp();
+  return useQuery<Project>(["task", { id }], () => client(`tasks/${id}`), {
+    enabled: !!id,
+  });
+};
+
+/**
+ * delete task by taskId
+ * @param queryKey
+ */
+export const useDeleteTask = (queryKey: QueryKey) => {
+  const client = useHttp();
+
+  return useMutation(
+    ({ id }: { id: number }) =>
+      client(`tasks/${id}`, {
+        method: "DELETE",
+      }),
+    useDeleteConfig(queryKey)
   );
 };
