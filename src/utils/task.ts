@@ -4,7 +4,7 @@ import { Task } from "../types/task";
 import {
   useAddConfig,
   useDeleteConfig,
-  useReorderConfig,
+  useReorderTaskConfig,
 } from "./use-optimistic-options";
 import { Project } from "../types/project";
 import { useDebounce } from "./index";
@@ -74,5 +74,5 @@ export const useReorderTask = (queryKey: QueryKey) => {
       data: params,
       method: "POST",
     });
-  }, useReorderConfig(queryKey));
+  }, useReorderTaskConfig(queryKey));
 };
